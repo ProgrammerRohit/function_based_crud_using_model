@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>crud using function</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  </head>
+  <body>
+    <div class="container m-5 p-5 border mx-auto shadow">
+        {% if messages %}
+        <div id="message-container">
+        {% for message in messages %}
+        <div>
+            <p class="alert alert-info text-center">{{message}}</p>
+        </div>
+        {% endfor %}
+        </div>
+        {% endif %}
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="">
+                <a href="" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">Add new student</a>
+            </div>
+            <div>
+                <form action="" method="POST" class="d-flex">
+                    {% csrf_token %}
+                    <input type="search" name="querySearch" value="{{search_query}}" class="form-control" placeholder="Search Here...">
+                    <button type="submit" class="btn btn-success mx-2" name="search">Search</button>
+                </form>
+            </div>
+        </div>
+       <div class="mt-3">
+        <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">NAME</th>
+                <th scope="col">EMAIL</th>
+                <th scope="col">PASSWORD</th>
+                <th scope="col">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for userdetail in userdetails %}
+                <tr>
+                    <td>{{userdetail.id}}</td>
+                    <td>{{userdetail.name}}</td>
+                    <td>{{userdetail.email}}</td>
+                    <td>{{userdetail.passw}}</td>
+                    <td>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#updateStudentModal_{{userdetail.id}}" class="btn btn-info btn-sm text-white"><i class="fa-solid fa-pen-to-square"></i></a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteStudentModal_{{userdetail.id}}" class="btn btn-danger btn-sm text-white"><i class="fa-solid fa-trash"></i></a>
+                    </td>
+                </tr>
+                <!-- Student Update Modal -->
+                <div class="modal fade" id="updateStudentModal_{{userdetail.id}}" tabindex="-1" aria-labelledby="updateStudentModal_{{userdetail.id}}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form action="" method="POST">
+                            {% csrf_token %}
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Update student</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="id" value="{{userdetail.id}}">
+                                    <div class="mb-3">
+                                        <label for="StudentName" class="form-label">Student Name:</label>
+                                        <input type="text" value="{{userdetail.name}}" name="name" class="form-control" id="StudentName" placeholder="Student Name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="StudentEmail" class="form-label">Student Email:</label>
+                                        <input type="email" value="{{userdetail.email}}" name="email" class="form-control" id="StudentEmail" placeholder="Student Email">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="StudentPassword" class="form-label">Student Password</label>
+                                        <input type="password" value="{{userdetail.passw}}" name="password" class="form-control" id="StudentPassword" placeholder="Student Password">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" name="update">Add new student</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!--Student Delete Modal -->
+                <div class="modal fade" id="deleteStudentModal_{{userdetail.id}}" tabindex="-1" aria-labelledby="deleteStudentModal_{{userdetail.id}}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form action="" method="POST">
+                            {% csrf_token %}
+                            <div class="modal-content">
+                                <input type="hidden" name="id" value="{{userdetail.id}}">
+                                <div class="modal-body">
+                                <h4>Are you sure you want to delete?</h4>
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-danger" name="delete">Delete student</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% if userdetails|length == 0 %}
+                <tr>
+                    <td colspan="5" class="text-center"><p class="alert alert-info">No user details available.</p></td>
+                </tr>
+                {% endif %}
+            </tbody>
+          </table>
+       </div>
+    </div>
+
+    <!-- Student Create Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add new student</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="StudentName" class="form-label">Student Name:</label>
+                        <input type="text" name="name" class="form-control" id="StudentName" placeholder="Student Name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="StudentEmail" class="form-label">Student Email:</label>
+                        <input type="email" name="email" class="form-control" id="StudentEmail" placeholder="Student Email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="StudentPassword" class="form-label">Student Password</label>
+                        <input type="password" name="password" class="form-control" id="StudentPassword" placeholder="Student Password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" name="create">Add new student</button>
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const messageContainer = document.getElementById("message-container");
+            
+            setTimeout(function() {
+                if (messageContainer) {
+                    messageContainer.remove();
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
